@@ -47,13 +47,23 @@ def wx_sign(req):
 
         logger.info(data1)
         data1['CreateTime'] = int(time.time())
-        repMsg = """<xml>
-        <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
-        <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
-        <CreateTime>{CreateTime}</CreateTime>
-        <MsgType><![CDATA[text]]></MsgType>
-        <Content><![CDATA[{Content}]]></Content>
-        </xml>""".format(**data1)
+        if data1['MsgType'] == 'text':
+            repMsg = """<xml>
+            <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
+            <CreateTime>{CreateTime}</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[{Content}]]></Content>
+            </xml>""".format(**data1)
+        elif data1['MsgType'] == 'event':
+            repMsg = """<xml>
+            <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
+            <CreateTime>{CreateTime}</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[welcome]]></Content>
+            </xml>""".format(**data1)
+
 
         logger.info( req.GET)
         return HttpResponse(repMsg, content_type="application/xml")
