@@ -40,7 +40,8 @@ def wx_sign(req):
 
         import xml.etree.ElementTree as ET
         for element in ET.iterparse(req):
-            logger.info("{} -- {}" % (type(element.tag), type(element.text)))
+            logger.info(element.tag)
+            logger.info(element.text)
         logger.info( "log done" )
 
         logger.info( req.GET)
