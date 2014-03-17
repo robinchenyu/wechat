@@ -50,7 +50,7 @@ def wx_sign(req):
         <CreateTime>{CreateTime}</CreateTime>
         <MsgType><![CDATA[text]]></MsgType>
         <Content><![CDATA[{Content}]]></Content>
-        </xml>""".format(**data)
+        </xml>""".format(**data1)
 
         logger.info( req.GET)
         return HttpResponse(repMsg, content_type="application/xml")
