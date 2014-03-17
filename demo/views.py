@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 # Create your views here.
 def check_sign(signature, timestamp, nonce):
-
+        TOKEN="robinchenyu02528359"
         if not signature or not timestamp or not nonce:
                 return False
 
@@ -21,7 +21,6 @@ def check_sign(signature, timestamp, nonce):
                 return False
 
 def wx_sign(req):
-        TOKEN="robinchenyu02528359"
         if req.method == "GET":
                 logger.info( "get method")
                 signature = req.GET.get('signature')
