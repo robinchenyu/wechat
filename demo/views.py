@@ -34,6 +34,10 @@ def wx_sign(req):
     else:
         logger.info( "post method " )
 
+        import xml.etree.ElementTree as ET
+        for element in ET.iterparse(request):
+            logger.info(element)
+
         logger.info(req.raw_post_data)
         logger.info(req.body)
 
