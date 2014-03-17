@@ -20,6 +20,7 @@ def check_sign(req):
     sha.update(tmpStr)
 
     if (sha.hexdigest() == signature):
+        logger.info("check signature success!")
         return True
     else:
         logger.info("check signature failed {} {} {} {}" % (signature, timestamp, nonce, sha.hexdigest()))
@@ -28,7 +29,7 @@ def check_sign(req):
 @csrf_exempt
 def wx_sign(req):
     if not check_sign(req):
-        return HttpResponse("failed")
+        return HttpResponse("check_sign failed")
 
     if req.method == "GET":
         logger.info( "get method")
