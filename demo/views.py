@@ -32,7 +32,7 @@ def wx_sign(req):
         if check_sign(signature, timestamp, nonce):
             return HttpResponse(req.GET.get('echostr'))
     else:
-        logger.info( "post method")
+        logger.info( "post method {} {}" % (req.GET, req.POST))
         signature = req.POST.get('signature')
         timestamp = req.POST.get('timestamp')
         nonce = req.POST.get('nonce')
