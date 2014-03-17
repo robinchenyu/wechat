@@ -11,6 +11,7 @@ def check_sign(req):
     timestamp = req.GET.get('timestamp')
     nonce = req.GET.get('nonce')
     if not signature or not timestamp or not nonce:
+        logger.error("cant get signature or timestamp or nonce")
         return False
 
     tmpArr = [TOKEN, timestamp, nonce]
