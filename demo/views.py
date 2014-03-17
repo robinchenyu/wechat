@@ -3,14 +3,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
-def wx_sign(req):
-        TOKEN="robinchenyu02528359"
-        signature = req.GET.get('signature')
-        timestamp = req.GET.get('timestamp')
-        nonce = req.GET.get('nonce')
+def check_sign(signature, timestamp, nonce):
 
         if not signature or not timestamp or not nonce:
-                return HttpResponse("get param failed")
+                return False
 
         tmpArr = [TOKEN, timestamp, nonce]
         tmpArr = sorted(tmpArr)
@@ -19,6 +15,29 @@ def wx_sign(req):
         sha.update(tmpStr)
 
         if (sha.hexdigest() == signature):
-                return HttpResponse(req.GET.get('echostr'))
+                return True
         else:
-                return HttpResponse("failed signature {} sum {}" % (type(signature), sha.hexdigest()))
+                return False
+
+def wx_sign(req):
+        TOKEN="robinchenyu02528359"
+        if req.method == "GET":
+                print "get method"
+                signature = req.GET.get('signature')
+                timestamp = req.GET.get('timestamp')
+                nonce = req.GET.get('nonce')
+                if check_sign(signature, timestamp, nonce):
+                        return HttpResponse(req.GET.get('echostr'))
+        else:
+                print "post method"
+                signature = req.POST.get('signature')
+                timestamp = req.POST.get('timestamp')
+                nonce = req.POST.get('nonce')
+
+                if check_sign(signature, timestamp, nonce):
+                        print "msg check ok! {} " % req.POST
+                        print "body {} " % req.body
+                        print "meta {} " % req.META
+
+                        for line in req.xreadlines():
+                                print "line: {} " % line
