@@ -5,8 +5,11 @@ from django.views.decorators.csrf import csrf_exempt
 import logging
 logger = logging.getLogger(__name__)
 # Create your views here.
-def check_sign(signature, timestamp, nonce):
+def check_sign(req):
     TOKEN="robinchenyu02528359"
+    signature = req.GET.get('signature')
+    timestamp = req.GET.get('timestamp')
+    nonce = req.GET.get('nonce')
     if not signature or not timestamp or not nonce:
         return False
 
@@ -24,34 +27,18 @@ def check_sign(signature, timestamp, nonce):
 
 @csrf_exempt
 def wx_sign(req):
+    if not check_sign(req):
+        return HttpResponse("failed")
+
     if req.method == "GET":
         logger.info( "get method")
-        signature = req.GET.get('signature')
-        timestamp = req.GET.get('timestamp')
-        nonce = req.GET.get('nonce')
-        if check_sign(signature, timestamp, nonce):
-            return HttpResponse(req.GET.get('echostr'))
+        return HttpResponse(req.GET.get('echostr'))
     else:
         logger.info( "post method " )
 
         import xml.etree.ElementTree as ET
         for element in ET.iterparse(req):
-            logger.info(element)
+            logger.info("%s -- %s" % (element.tag, element.text))
         logger.info( "log done" )
 
         logger.info( req.GET)
-
-        logger.info(req.raw_post_data)
-        logger.info(req.body)
-
-        signature = req.POST.get('signature')
-        timestamp = req.POST.get('timestamp')
-        nonce = req.POST.get('nonce')
-
-        if check_sign(signature, timestamp, nonce):
-            logger.info( "msg check ok! {} " % req.POST)
-            logger.info( "body {} " % req.body)
-            logger.info( "meta {} " % req.META)
-
-            for line in req.xreadlines():
-                logger.info( "line: {} " % line)
