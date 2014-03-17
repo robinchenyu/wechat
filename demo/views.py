@@ -39,9 +39,10 @@ def wx_sign(req):
         logger.info( "post method " )
 
         import xml.etree.ElementTree as ET
-        for element in ET.iterparse(req):
-            logger.info(element.tag)
-            logger.info(element.text)
+        data = []
+        for t, element in ET.iterparse(req):
+            data.append((element.tag, element.text))
         logger.info( "log done" )
 
         logger.info( req.GET)
+        return HttpResponse(",".join(["%s-%s" % (x,y) for x,y in data]))
