@@ -1,3 +1,4 @@
+import time
 import hashlib
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -44,9 +45,11 @@ def wx_sign(req):
             data1[element.tag] = element.text
         logger.info( "log done" )
 
+        logger.info(data1)
+        data1['CreateTime'] = int(time.time())
         repMsg = """<xml>
-        <ToUserName><![CDATA[{toUser}]]></ToUserName>
-        <FromUserName><![CDATA[{fromUser}]]></FromUserName>
+        <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
+        <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
         <CreateTime>{CreateTime}</CreateTime>
         <MsgType><![CDATA[text]]></MsgType>
         <Content><![CDATA[{Content}]]></Content>
