@@ -1,6 +1,7 @@
 import hashlib
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import logging
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -20,6 +21,7 @@ def check_sign(signature, timestamp, nonce):
         else:
                 return False
 
+@csrf_exempt
 def wx_sign(req):
         if req.method == "GET":
                 logger.info( "get method")
