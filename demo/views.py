@@ -24,7 +24,7 @@ def check_sign(req):
         logger.info("check signature success!")
         return True
     else:
-        logger.info("check signature failed {} {} {} {}" % (signature, timestamp, nonce, sha.hexdigest()))
+        logger.info("check signature failed {} {} {} {}".format(signature, timestamp, nonce, sha.hexdigest()))
         return False
 
 @csrf_exempt
@@ -39,10 +39,18 @@ def wx_sign(req):
         logger.info( "post method " )
 
         import xml.etree.ElementTree as ET
-        data = []
+        data1 = {}
         for t, element in ET.iterparse(req):
-            data.append((element.tag, element.text))
+            data1[element.tag] = element.text
         logger.info( "log done" )
 
+        repMsg = """<xml>
+        <ToUserName><![CDATA[{toUser}]]></ToUserName>
+        <FromUserName><![CDATA[{fromUser}]]></FromUserName>
+        <CreateTime>{CreateTime}</CreateTime>
+        <MsgType><![CDATA[text]]></MsgType>
+        <Content><![CDATA[{Content}]]></Content>
+        </xml>""".format(**data)
+
         logger.info( req.GET)
-        return HttpResponse(",".join(["%s-%s" % (x,y) for x,y in data]))
+        return HttpResponse(repMsg, content_type="application/xml")
