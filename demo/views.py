@@ -3,8 +3,11 @@ import hashlib
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.encoding import smart_str
+
 import logging
 logger = logging.getLogger(__name__)
+
 # Create your views here.
 def check_sign(req):
     TOKEN="robinchenyu02528359"
@@ -42,7 +45,7 @@ def wx_sign(req):
         import xml.etree.ElementTree as ET
         data1 = {}
         for t, element in ET.iterparse(req):
-            data1[element.tag] = element.text
+            data1[element.tag] = smart_str(element.text)
         logger.info( "log done" )
 
         logger.info(data1)
