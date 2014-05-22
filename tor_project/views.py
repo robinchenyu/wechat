@@ -1,10 +1,15 @@
-import tornado.web
 import logging
+import time
+import hashlib
+
+import tornado.web
 
 logger = logging.getLogger(__name__)
 
+
 class WechatHandler(tornado.web.RequestHandler):
-    TOKEN="robinchenyu02528359"
+    TOKEN = "robinchenyu02528359"
+
     def get(self):
         if not self._check_sign():
             return self.write("check_sign failed")
@@ -18,9 +23,9 @@ class WechatHandler(tornado.web.RequestHandler):
 
         import xml.etree.ElementTree as ET
         data1 = {}
-        for t, element in ET.iterparse(req):
-            data1[element.tag] = smart_str(element.text)
-        logger.info( "log done" )
+        for t, element in ET.iterparse(self.request.body):
+            data1[element.tag] = element.text
+        logger.info("log done")
 
         logger.info(data1)
         data1['CreateTime'] = int(time.time())
@@ -41,10 +46,9 @@ class WechatHandler(tornado.web.RequestHandler):
             <Content><![CDATA[welcome]]></Content>
             </xml>""".format(**data1)
 
-        logger.info( "post resp" )
-        self.set_header(content_type = "application/xml")
+        logger.info("post resp")
+        self.set_header(content_type="application/xml")
         return self.write(repMsg)
-
 
     def _check_sign(self):
         signature = self.get_argument('signature')
@@ -54,7 +58,7 @@ class WechatHandler(tornado.web.RequestHandler):
             logger.error("cant get signature or timestamp or nonce")
             return False
 
-        tmpArr = [TOKEN, timestamp, nonce]
+        tmpArr = [self.TOKEN, timestamp, nonce]
         tmpArr = sorted(tmpArr)
         tmpStr = "".join(tmpArr)
         sha = hashlib.sha1()
