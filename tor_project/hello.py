@@ -5,9 +5,10 @@ import tornado.options
 import tornado.web
 
 from tornado.options import define, options
-define("port", default=8000, help="run on the given port", type=int)
+define("port", default=8077, help="run on the given port", type=int)
 
 from views import WechatHandler
+
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
@@ -17,7 +18,7 @@ class IndexHandler(tornado.web.RequestHandler):
 if __name__ == "__main__":
     tornado.options.parse_command_line()
     app = tornado.web.Application(handlers=[(r"/", IndexHandler),
-                                            (r"^sign/$", WechatHandler)])
+                                            (r"/demo/sign/$", WechatHandler)])
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()

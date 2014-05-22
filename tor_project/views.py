@@ -3,6 +3,8 @@ import time
 import hashlib
 
 import tornado.web
+from xmlparse import parse_xml
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,34 +23,27 @@ class WechatHandler(tornado.web.RequestHandler):
         if not self._check_sign():
             return self.write("post check sign failed")
 
-        import xml.etree.ElementTree as ET
-        data1 = {}
-        for t, element in ET.iterparse(self.request.body):
-            data1[element.tag] = element.text
+        data1 = parse_xml(self.request.body)
         logger.info("log done")
 
         logger.info(data1)
         data1['CreateTime'] = int(time.time())
-        if data1['MsgType'] == 'text':
-            repMsg = """<xml>
-            <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
-            <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
-            <CreateTime>{CreateTime}</CreateTime>
-            <MsgType><![CDATA[text]]></MsgType>
-            <Content><![CDATA[{Content}]]></Content>
-            </xml>""".format(**data1)
-        elif data1['MsgType'] == 'event':
-            repMsg = """<xml>
-            <ToUserName><![CDATA[{FromUserName}]]></ToUserName>
-            <FromUserName><![CDATA[{ToUserName}]]></FromUserName>
-            <CreateTime>{CreateTime}</CreateTime>
-            <MsgType><![CDATA[text]]></MsgType>
-            <Content><![CDATA[welcome]]></Content>
-            </xml>""".format(**data1)
-
         logger.info("post resp")
-        self.set_header(content_type="application/xml")
-        return self.write(repMsg)
+        self.set_header('Content-Type', "application/xml")
+
+        return self._render_msg1('msg/%s_msg.xml' % data1.get('MsgType'), data1)
+
+    def _render_msg1(self, template, kwargs):
+        msg = ''
+        try:
+            with open(template, 'r') as fr:
+                msg = fr.read()
+        except Exception as e:
+            logger.error("read template %s failed: %s" % (template, e.message))
+            pass
+        msg = msg.format(**kwargs)
+        # logger.info("msg: %s" % msg)
+        return self.write(msg)
 
     def _check_sign(self):
         signature = self.get_argument('signature')
